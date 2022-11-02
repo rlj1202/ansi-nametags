@@ -2,39 +2,40 @@ import { NextPage } from "next";
 import { FC, useEffect, useRef } from "react";
 
 const ApcNametag: FC<{
-  name: string;
-  department: string;
-  role: string;
+  title: string;
+  subtitle: string;
   year: number;
-}> = ({ name, department, role, year }) => {
-  const roleRef = useRef<HTMLDivElement>(null);
+}> = ({ title, subtitle, year }) => {
+  const titleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!roleRef.current) return;
+    if (!titleRef.current) return;
     const fontSize = window
-      .getComputedStyle(roleRef.current, null)
+      .getComputedStyle(titleRef.current, null)
       .getPropertyValue("font-size");
 
     const fontSizeNum = parseInt(fontSize.match(/\d+/)?.at(0) || "1");
 
     const padding = 15;
+    const maxFontSize = 90;
 
-    const width = roleRef.current.clientWidth;
+    const width = titleRef.current.clientWidth;
     const parentWidth =
-      (roleRef.current.parentElement?.clientWidth || 1) - padding * 2;
+      (titleRef.current.parentElement?.clientWidth || 1) - padding * 2;
 
-    roleRef.current.style.fontSize = `${(fontSizeNum / width) * parentWidth}px`;
+    let adjustedFontSize = (fontSizeNum / width) * parentWidth;
+    adjustedFontSize = Math.min(adjustedFontSize, maxFontSize);
+
+    titleRef.current.style.fontSize = `${adjustedFontSize}px`;
   });
 
   return (
     <div className="wrapper">
       <div className="info">
-        <div ref={roleRef} className="info-role">
-          {role}
+        <div ref={titleRef} className="info-title">
+          {title}
         </div>
-        <div className="info-name">
-          {department} {name}
-        </div>
+        <div className="info-subtitle">{subtitle}</div>
       </div>
       <div className="footer">
         <div className="footer-year">{year} APC</div>
@@ -42,8 +43,8 @@ const ApcNametag: FC<{
       </div>
       <style jsx>{`
         .wrapper {
-          width: 10cm;
-          height: 9cm;
+          width: 9cm;
+          height: 6cm;
 
           border: 1px solid black;
 
@@ -60,16 +61,16 @@ const ApcNametag: FC<{
           justify-content: center;
           align-items: center;
         }
-        .info-role {
+        .info-title {
           font-size: 45pt;
           font-weight: bold;
           font-family: "Impact";
-          ${role == "STAFF" ? "color: rgb(187, 39, 26)" : ""}
-          ${role == "DIRECTOR" ? "color: rgb(36, 42, 52)" : ""}
-          ${role == "SETTER" ? "color: rgb(107, 34, 70)" : ""}
-          ${role == "SYSTEM" ? "color: rgb(38, 78, 90)" : ""}
+          ${title == "STAFF" ? "color: rgb(187, 39, 26)" : ""}
+          ${title == "DIRECTOR" ? "color: rgb(36, 42, 52)" : ""}
+          ${title == "SETTER" ? "color: rgb(107, 34, 70)" : ""}
+          ${title == "SYSTEM" ? "color: rgb(38, 78, 90)" : ""}
         }
-        .info-name {
+        .info-subtitle {
           font-size: 26pt;
           font-weight: bold;
           color: rgb(67, 67, 67);
@@ -94,44 +95,56 @@ const ApcNametags: NextPage = ({}) => {
 
   const persons = [
     {
-      name: "심지수",
-      department: "소프트웨어학과",
-      role: "DIRECTOR",
+      title: "DIRECTOR",
+      subtitle: "소프트웨어학과 심지수",
     },
     {
-      name: "심지수",
-      department: "소프트웨어학과",
-      role: "SETTER",
+      title: "SETTER",
+      subtitle: "소프트웨어학과 정의찬",
     },
     {
-      name: "정의찬",
-      department: "소프트웨어학과",
-      role: "SETTER",
+      title: "SETTER",
+      subtitle: "소프트웨어학과 송선우",
     },
     {
-      name: "송선우",
-      department: "소프트웨어학과",
-      role: "SETTER",
+      title: "SETTER",
+      subtitle: "소프트웨어학과 김현빈",
     },
     {
-      name: "김현빈",
-      department: "소프트웨어학과",
-      role: "SETTER",
+      title: "PROFESSOR",
+      subtitle: "소프트웨어학과 오상윤",
     },
     {
-      name: "오상윤",
-      department: "소프트웨어학과",
-      role: "PROFESSOR",
+      title: "STAFF",
+      subtitle: "소프트웨어학과 정진원",
     },
     {
-      name: "홍길동",
-      department: "소프트웨어학과",
-      role: "SYSTEM",
+      title: "STAFF",
+      subtitle: "소프트웨어학과 전다함",
     },
     {
-      name: "홍길동",
-      department: "소프트웨어학과",
-      role: "테스트",
+      title: "STAFF",
+      subtitle: "소프트웨어학과 최환희",
+    },
+    {
+      title: "STAFF",
+      subtitle: "소프트웨어학과 신준화",
+    },
+    {
+      title: "STAFF",
+      subtitle: "소프트웨어학과 박지호",
+    },
+    {
+      title: "SYSTEM",
+      subtitle: "소프트웨어학과 홍길동",
+    },
+    {
+      title: "홍길동",
+      subtitle: "소프트웨어학과, Div1",
+    },
+    {
+      title: "김철수",
+      subtitle: "소프트웨어학과, Div2",
     },
   ];
 
@@ -139,21 +152,43 @@ const ApcNametags: NextPage = ({}) => {
     <div className="wrapper">
       {persons.map((person) => {
         return (
-          <ApcNametag
-            name={person.name}
-            department={person.department}
-            role={person.role}
-            year={year}
-            key={`${person.name}${person.role}`}
-          />
+          <div className="nametag" key={`${person.title}${person.subtitle}`}>
+            <ApcNametag
+              title={person.title}
+              subtitle={person.subtitle}
+              year={year}
+            />
+          </div>
         );
       })}
 
       <style jsx>{`
         .wrapper {
+          /*
           display: grid;
           grid-template-columns: 1fr 1fr;
           grid-gap: 3pt;
+
+          page-break-inside: avoid;
+          */
+        }
+
+        .nametag {
+          /*
+          page-break-inside: avoid;
+          display: inline-block;
+          page-break-inside: avoid;
+          */
+        }
+
+        .nametag {
+          float: left;
+          padding-right: 3pt;
+          padding-bottom: 3pt;
+        }
+
+        .nametag:nth-child(2n + 1) {
+          clear: left;
         }
       `}</style>
     </div>
