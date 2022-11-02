@@ -63,6 +63,7 @@ const ApcNametag: FC<{
         .info-role {
           font-size: 45pt;
           font-weight: bold;
+          font-family: "Impact";
           ${role == "STAFF" ? "color: rgb(187, 39, 26)" : ""}
           ${role == "DIRECTOR" ? "color: rgb(36, 42, 52)" : ""}
           ${role == "SETTER" ? "color: rgb(107, 34, 70)" : ""}
@@ -126,6 +127,11 @@ const ApcNametags: NextPage = ({}) => {
       name: "홍길동",
       department: "소프트웨어학과",
       role: "SYSTEM",
+    },
+    {
+      name: "홍길동",
+      department: "소프트웨어학과",
+      role: "테스트",
     },
   ];
 
