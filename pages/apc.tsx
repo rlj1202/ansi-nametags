@@ -150,7 +150,9 @@ export const getServerSideProps: GetServerSideProps<{
     });
   }
 
-  for (let i = 0; i < 4; i++) {
+  const padding = Math.ceil(persons.length / 8) * 8 - persons.length;
+
+  for (let i = 0; i < padding; i++) {
     persons.push({
       title: "",
       subtitle: "",
