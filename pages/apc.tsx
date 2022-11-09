@@ -1,5 +1,14 @@
-import { NextPage } from "next";
+import {
+  GetServerSideProps,
+  InferGetServerSidePropsType,
+  NextPage,
+} from "next";
 import { FC, useEffect, useRef } from "react";
+
+import fs from "fs";
+
+import * as csv from "csv";
+import path from "path";
 
 const ApcNametag: FC<{
   title: string;
@@ -7,9 +16,11 @@ const ApcNametag: FC<{
   year: number;
 }> = ({ title, subtitle, year }) => {
   const titleRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!titleRef.current) return;
+
     const fontSize = window
       .getComputedStyle(titleRef.current, null)
       .getPropertyValue("font-size");
@@ -29,13 +40,37 @@ const ApcNametag: FC<{
     titleRef.current.style.fontSize = `${adjustedFontSize}px`;
   });
 
+  useEffect(() => {
+    if (!subtitleRef.current) return;
+
+    const fontSize = window
+      .getComputedStyle(subtitleRef.current, null)
+      .getPropertyValue("font-size");
+
+    const fontSizeNum = parseInt(fontSize.match(/\d+/)?.at(0) || "1");
+
+    const padding = 15;
+    const maxFontSize = 30;
+
+    const width = subtitleRef.current.clientWidth;
+    const parentWidth =
+      (subtitleRef.current.parentElement?.clientWidth || 1) - padding * 2;
+
+    let adjustedFontSize = (fontSizeNum / width) * parentWidth;
+    adjustedFontSize = Math.min(adjustedFontSize, maxFontSize);
+
+    subtitleRef.current.style.fontSize = `${adjustedFontSize}px`;
+  });
+
   return (
     <div className="wrapper">
       <div className="info">
         <div ref={titleRef} className="info-title">
           {title}
         </div>
-        <div className="info-subtitle">{subtitle}</div>
+        <div ref={subtitleRef} className="info-subtitle">
+          {subtitle}
+        </div>
       </div>
       <div className="footer">
         <div className="footer-year">{year} APC</div>
@@ -90,10 +125,51 @@ const ApcNametag: FC<{
   );
 };
 
-const ApcNametags: NextPage = ({}) => {
+export const getServerSideProps: GetServerSideProps<{
+  persons: { title: string; subtitle: string }[];
+}> = async (context) => {
+  const filePath = path.join(process.cwd(), "res/2022_apc_participants.csv");
+  const fileStream = fs.createReadStream(filePath, { encoding: "utf8" });
+
+  const csvStream = fileStream.pipe(
+    csv.parse({ encoding: "utf8", columns: true }),
+  );
+
+  const persons: Array<{ title: string; subtitle: string }> = [];
+
+  for await (const chunk of csvStream) {
+    const {
+      이름: name,
+      학번: id,
+      학과: department,
+      "참가 부문": division,
+    } = chunk;
+    persons.push({
+      title: name,
+      subtitle: `${department}, ${division}`,
+    });
+  }
+
+  for (let i = 0; i < 4; i++) {
+    persons.push({
+      title: "",
+      subtitle: "",
+    });
+  }
+
+  return {
+    props: {
+      persons,
+    },
+  };
+};
+
+const ApcNametags: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ persons }) => {
   const year = 2022;
 
-  const persons = [
+  const staffs = [
     {
       title: "DIRECTOR",
       subtitle: "소프트웨어학과 심지수",
