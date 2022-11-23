@@ -1,3 +1,14 @@
+html {
+  --ansi-red: #e1443d;
+  --ansi-black: #383131;
+  --ansi-white: #f6f1f1;
+  --ansi-cyan: #75b5c4;
+  --ansi-yellow: #eee273;
+  --ansi-green: #a6d3b2;
+  --ansi-brown: #d5c195;
+  --ansi-mint: rgb(90, 216, 175);
+}
+
 html,
 body {
   padding: 0;

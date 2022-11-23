@@ -1,49 +1,57 @@
-import { NextPage } from "next";
+import {
+  GetServerSideProps,
+  InferGetServerSidePropsType,
+  NextPage,
+} from "next";
 import Image from "next/image";
 import { FC } from "react";
 
 import ansiLogo from "../public/ansi-logo-white.svg";
 
+import fs from "fs";
+
+import * as csv from "csv";
+import path from "path";
+
 const HomecomingNametag: FC<{
-  name: string;
   group: string;
-  admissionYear: number;
+  title: string;
+  subtitle: string;
   homecomingYear: number;
   ext?: string;
-}> = ({ name, group, admissionYear, homecomingYear, ext }) => {
+}> = ({ group, title, subtitle, homecomingYear, ext }) => {
   return (
     <div className="wrapper">
       <div className="info">
-        <div className="info-year">{admissionYear}</div>
-        <div className="info-name">{name}</div>
-        <div className="info-ext">{ext || ""}</div>
+        <div className="info-year">{subtitle}</div>
+        <div className="info-name">{title}</div>
+        {ext && <div className="info-ext">{ext}</div>}
       </div>
       <div className="footer">
         <div className="footer-logo">
-          <Image src={ansiLogo} alt="A.N.S.I. Logo" fill />
+          <div className="footer-logo-wrapper">
+            <Image src={ansiLogo} alt="A.N.S.I. Logo" fill />
+          </div>
         </div>
-        <div className="footer-hangul">
-          {homecomingYear} A.N.S.I. 홈커밍데이
-        </div>
-        <div className="footer-english">
-          A.N.S.I. Homecoming Day {homecomingYear}
+        <div className="footer-names">
+          <div className="footer-hangul">
+            {homecomingYear} A.N.S.I. 홈커밍데이
+          </div>
+          <div className="footer-english">
+            A.N.S.I. Homecoming Day {homecomingYear}
+          </div>
         </div>
       </div>
 
       <style jsx>{`
         .wrapper {
-          border-width: 1.5pt;
-          border-color: black;
-          border-style: solid;
+          border: 1px solid black;
 
-          min-width: 10cm;
-          max-width: 10cm;
-          min-height: 9cm;
-          max-height: 9cm;
+          width: 9cm;
+          height: 8cm;
 
           display: flex;
           flex-direction: column;
-          box-sizing: border-box;
         }
 
         .info {
@@ -55,14 +63,13 @@ const HomecomingNametag: FC<{
 
           display: flex;
           flex-direction: column;
-          justify-content: space-around;
-          padding: 25pt 0;
+          justify-content: center;
         }
         .info-year {
-          font-size: 36pt;
+          font-size: 30pt;
         }
         .info-name {
-          font-size: 80pt;
+          font-size: 75pt;
         }
         .info-ext {
           font-size: 24pt;
@@ -70,30 +77,40 @@ const HomecomingNametag: FC<{
 
         .footer {
           text-align: right;
-          background-color: red;
+          background-color: var(
+            ${group === "재학생"
+              ? "--ansi-black"
+              : group === "휴학생"
+              ? "--ansi-blue"
+              : group === "졸업생"
+              ? "--ansi-red"
+              : group === "신입생"
+              ? "--ansi-mint"
+              : group === "교수님"
+              ? "--ansi-brown"
+              : "--ansi-black"}
+          );
           color: white;
 
           padding: 5pt;
           box-sizing: border-box;
 
-          display: grid;
-          grid-template-columns: auto auto;
-          grid-template-rows: auto auto;
+          display: flex;
+          align-items: stretch;
         }
         .footer-logo {
-          height: 15pt;
-
+          padding-left: 5pt;
+          padding-right: 25pt;
+          flex: 1;
+        }
+        .footer-logo-wrapper {
           position: relative;
-
-          place-self: center;
-
-          grid-row-start: 1;
-          grid-row-end: span 2;
+          width: 100%;
+          height: 100%;
         }
         .footer-hangul,
         .footer-english {
           padding: 1pt;
-          box-sizing: border-box;
         }
         .footer-hangul {
           font-weight: bold;
@@ -111,16 +128,84 @@ const HomecomingNametag: FC<{
   );
 };
 
-const HomecomingNametags: NextPage = ({}) => {
+export const getServerSideProps: GetServerSideProps<{
+  persons: { title: string; subtitle: string; group: string }[];
+}> = async (context) => {
+  const filePath = path.join(
+    process.cwd(),
+    "res/2022_homecoming_participants.csv",
+  );
+  const fileStream = fs.createReadStream(filePath, { encoding: "utf8" });
+
+  const csvStream = fileStream.pipe(
+    csv.parse({ encoding: "utf8", columns: true }),
+  );
+
+  const persons: Array<{ title: string; subtitle: string; group: string }> = [];
+
+  for await (const chunk of csvStream) {
+    const { 이름: name, 학번: id, 분류: group } = chunk;
+
+    if (group === "교수님") {
+      persons.push({
+        title: name,
+        subtitle: "교수님",
+        group: group,
+      });
+    } else {
+      persons.push({
+        title: name,
+        subtitle: `${id} 학번`,
+        group: group,
+      });
+    }
+  }
+
+  const padding = Math.ceil(persons.length / 8) * 8 - persons.length;
+
+  for (let i = 0; i < padding; i++) {
+    persons.push({
+      title: "",
+      subtitle: "",
+      group: "",
+    });
+  }
+
+  return {
+    props: {
+      persons,
+    },
+  };
+};
+
+const HomecomingNametags: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ persons }) => {
   return (
-    <>
-      <HomecomingNametag
-        name="심지수"
-        group="재학생"
-        admissionYear={18}
-        homecomingYear={2022}
-      />
-    </>
+    <div className="wrapper">
+      {persons.map((person) => (
+        <div className="nametag">
+          <HomecomingNametag
+            group={person.group}
+            title={person.title}
+            subtitle={person.subtitle}
+            homecomingYear={2022}
+          />
+        </div>
+      ))}
+
+      <style jsx>{`
+        .nametag {
+          float: left;
+          padding-right: 3pt;
+          padding-bottom: 3pt;
+        }
+
+        .nametag:nth-child(2n + 1) {
+          clear: left;
+        }
+      `}</style>
+    </div>
   );
 };
 
