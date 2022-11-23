@@ -20,6 +20,9 @@ const HomecomingNametag: FC<{
   homecomingYear: number;
   ext?: string;
 }> = ({ group, title, subtitle, homecomingYear, ext }) => {
+  const width = "8.5cm";
+  const height = "5.4cm";
+
   return (
     <div className="wrapper">
       <div className="info">
@@ -47,16 +50,19 @@ const HomecomingNametag: FC<{
         .wrapper {
           border: 1px solid black;
 
-          width: 9cm;
-          height: 8cm;
+          width: ${width};
+          height: ${height};
 
           display: flex;
           flex-direction: column;
+
+          overflow: hidden;
+
+          font-family: "Nanum Gothic", sans-serif;
         }
 
         .info {
           color: black;
-          font-weight: bold;
           text-align: center;
 
           flex-grow: 1;
@@ -66,10 +72,13 @@ const HomecomingNametag: FC<{
           justify-content: center;
         }
         .info-year {
-          font-size: 30pt;
+          font-size: 20pt;
+          font-weight: 800;
         }
         .info-name {
-          font-size: 75pt;
+          font-size: 60pt;
+          font-weight: bold;
+          font-weight: 800;
         }
         .info-ext {
           font-size: 24pt;
@@ -114,12 +123,12 @@ const HomecomingNametag: FC<{
         }
         .footer-hangul {
           font-weight: bold;
-          font-size: 14pt;
+          font-size: 10pt;
 
           grid-column-start: 2;
         }
         .footer-english {
-          font-size: 13pt;
+          font-size: 10pt;
 
           grid-column-start: 2;
         }
@@ -183,8 +192,8 @@ const HomecomingNametags: NextPage<
 > = ({ persons }) => {
   return (
     <div className="wrapper">
-      {persons.map((person) => (
-        <div className="nametag">
+      {persons.map((person, index) => (
+        <div className="nametag" key={index}>
           <HomecomingNametag
             group={person.group}
             title={person.title}
@@ -197,8 +206,8 @@ const HomecomingNametags: NextPage<
       <style jsx>{`
         .nametag {
           float: left;
-          padding-right: 3pt;
-          padding-bottom: 3pt;
+          padding-right: 0pt;
+          padding-bottom: 0pt;
         }
 
         .nametag:nth-child(2n + 1) {
