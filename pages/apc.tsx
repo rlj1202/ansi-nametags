@@ -74,7 +74,7 @@ const ApcNametag: FC<{
       </div>
       <div className="footer">
         <div className="footer-year">{year} APC</div>
-        <div>제 12회 아주대학교 프로그래밍 경시대회</div>
+        <div>제 14회 아주대학교 프로그래밍 경시대회</div>
       </div>
       <style jsx>{`
         .wrapper {
@@ -169,7 +169,7 @@ export const getServerSideProps: GetServerSideProps<{
 const ApcNametags: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ persons }) => {
-  const year = 2022;
+  const year = 2024;
 
   const staffs = [
     {
@@ -186,11 +186,11 @@ const ApcNametags: NextPage<
     },
     {
       title: "SETTER",
-      subtitle: "소프트웨어학과 김현빈",
+      subtitle: "소프트웨어학과, 김현빈",
     },
     {
       title: "PROFESSOR",
-      subtitle: "소프트웨어학과 오상윤",
+      subtitle: "소프트웨어학과, 오상윤",
     },
     {
       title: "STAFF",
