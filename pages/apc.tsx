@@ -78,8 +78,8 @@ const ApcNametag: FC<{
       </div>
       <style jsx>{`
         .wrapper {
-          width: 9cm;
-          height: 6cm;
+          width: 8.5cm;
+          height: 11.6cm;
 
           border: 1px solid black;
 
@@ -97,7 +97,7 @@ const ApcNametag: FC<{
           align-items: center;
         }
         .info-title {
-          font-size: 45pt;
+          font-size: 40pt;
           font-weight: bold;
           font-family: "Impact";
           ${title == "STAFF" ? "color: rgb(187, 39, 26)" : ""}
@@ -112,7 +112,7 @@ const ApcNametag: FC<{
         }
 
         .footer {
-          padding: 5pt;
+          padding: 7pt;
           text-align: right;
           background-color: rgb(58, 56, 56);
           color: white;
@@ -146,7 +146,7 @@ export const getServerSideProps: GetServerSideProps<{
     } = chunk;
     persons.push({
       title: name,
-      subtitle: `${department}, ${division}`,
+      subtitle: `${department} | ${division}`,
     });
   }
 
@@ -174,61 +174,54 @@ const ApcNametags: NextPage<
   const staffs = [
     {
       title: "DIRECTOR",
-      subtitle: "소프트웨어학과 심지수",
+      subtitle: "소프트웨어학과 김현빈",
     },
     {
       title: "SETTER",
-      subtitle: "소프트웨어학과 정의찬",
+      subtitle: "소프트웨어학과 장민우",
     },
     {
       title: "SETTER",
-      subtitle: "소프트웨어학과 송선우",
+      subtitle: "소프트웨어학과 박민석",
     },
     {
       title: "SETTER",
-      subtitle: "소프트웨어학과, 김현빈",
+      subtitle: "소프트웨어학과 김유겸",
     },
     {
       title: "PROFESSOR",
-      subtitle: "소프트웨어학과, 오상윤",
+      subtitle: "소프트웨어학과 오상윤",
     },
     {
       title: "STAFF",
-      subtitle: "소프트웨어학과 정진원",
+      subtitle: "소프트웨어학과 송선우",
     },
     {
       title: "STAFF",
-      subtitle: "소프트웨어학과 전다함",
+      subtitle: "소프트웨어학과 배성연",
     },
     {
       title: "STAFF",
-      subtitle: "소프트웨어학과 최환희",
+      subtitle: "소프트웨어학과 이예고운",
     },
     {
       title: "STAFF",
-      subtitle: "소프트웨어학과 신준화",
+      subtitle: "소프트웨어학과 장지윤",
     },
     {
       title: "STAFF",
-      subtitle: "소프트웨어학과 박지호",
+      subtitle: "소프트웨어학과 함도혁",
     },
     {
       title: "SYSTEM",
       subtitle: "소프트웨어학과 홍길동",
     },
-    {
-      title: "홍길동",
-      subtitle: "소프트웨어학과, Div1",
-    },
-    {
-      title: "김철수",
-      subtitle: "소프트웨어학과, Div2",
-    },
   ];
-
+  const allPersons = [...staffs, ...persons];
+  
   return (
     <div className="wrapper">
-      {persons.map((person) => {
+      {allPersons.map((person) => {
         return (
           <div className="nametag" key={`${person.title}${person.subtitle}`}>
             <ApcNametag
@@ -262,7 +255,7 @@ const ApcNametags: NextPage<
         .nametag {
           float: left;
           padding-right: 3pt;
-          padding-bottom: 3pt;
+          padding-bottom: 15pt;
         }
 
         .nametag:nth-child(2n + 1) {
